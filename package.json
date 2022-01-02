@@ -1,0 +1,35 @@
+{
+  "name": "philister",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ."
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-jwt": "^6.1.0",
+    "pg": "^8.7.1",
+    "redis": "^3.1.2",
+    "sequelize": "^6.12.2"
+  },
+  "devDependencies": {
+    "jest": "^27.1.0",
+    "nodemon": "^2.0.12",
+    "supertest": "^6.1.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wi4er/philister.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wi4er/philister/issues"
+  },
+  "homepage": "https://github.com/wi4er/philister#readme"
+}
