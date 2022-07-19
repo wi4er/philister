@@ -5,6 +5,13 @@ const Group = require("./Group");
 beforeEach(() => require(".").clearDatabase());
 beforeAll(() => require(".").connect());
 
+jest.mock("../../environment", () => ({
+    DB_USER: "postgres",
+    DB_PASSWORD: "example",
+    DB_HOST: "localhost",
+    DB_NAME: "postgres",
+}));
+
 describe("Element entity", () => {
     describe("Element fields", () => {
         test("Should create element", async () => {
@@ -20,7 +27,7 @@ describe("Element entity", () => {
         test("Should create with property", async () => {
             await Property.create({id: "NAME"});
 
-            const inst = await Element.create({
+            const inst = (await Element.create({
                 slug: "123",
                 property: [{
                     value: "Value",
@@ -30,7 +37,7 @@ describe("Element entity", () => {
                 include: [
                     Element.Property,
                 ]
-            });
+            }));
             
             expect(inst.property).toHaveLength(1);
             expect(inst.property[0].value).toBe("Value");

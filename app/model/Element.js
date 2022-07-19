@@ -7,10 +7,19 @@ const Element = connection.define(
     "Element",
     {
         slug: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(100),
             allowNull: false,
+            unique: 'slugIndex'
         },
     },
+);
+
+Element.hasOne(
+    Element,
+    {
+        onDelete: 'CASCADE',
+        foreignKey: "parent",
+    }
 );
 
 const ElementProperty = connection.define(
@@ -44,6 +53,9 @@ ElementProperty.Property = ElementProperty.belongsTo(
 
 Element.Property = Element.hasMany(ElementProperty, {as: "property"});
 
-module.exports = Element;
+module.exports = {
+    Element,
+    ElementProperty
+};
 
 

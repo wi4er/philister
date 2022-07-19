@@ -10,6 +10,25 @@ services:
     ports:
       - "5432:5432"
 
+  element:
+    image: node:lts
+    container_name: philister_api
+    working_dir: /app
+    command: npm start
+    environment:
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: example
+      DB_NAME: postgres
+      CACHE_HOST: cache
+    links:
+      - postgres
+      - cache
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+
   cache:
     image: redis:alpine
     container_name: philister_cache
