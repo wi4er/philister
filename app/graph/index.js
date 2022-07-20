@@ -1,5 +1,5 @@
-const { graphqlHTTP } = require('express-graphql');
-const { graphql, buildSchema } = require('graphql');
+const {graphqlHTTP} = require('express-graphql');
+const {graphql, buildSchema} = require('graphql');
 const {Element} = require("../model/Element");
 
 const MyGraphQLSchema = buildSchema(`
@@ -21,6 +21,14 @@ const MyGraphQLSchema = buildSchema(`
     property: [ElementProperty]
     parent: Element
     children: [Element]
+    group: [Int]
+  }
+  
+  type Group {
+    id: Int
+    slug: String!
+    createdAt: String!
+    updatedAt: String!
   }
   
   type ElementProperty {
@@ -28,7 +36,6 @@ const MyGraphQLSchema = buildSchema(`
     PropertyId: String
   }
 `);
-
 
 
 const rootValue = {

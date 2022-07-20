@@ -1,7 +1,6 @@
 module.exports = class ResolveResolver {
     list = new Map();
 
-
     resolve(list) {
         for (const [key, value] of this.list) {
             for (const item of value) {
@@ -12,6 +11,22 @@ module.exports = class ResolveResolver {
         this.list.clear();
     }
 
+    tick(onResolve) {
+        if (!this.list.size) return;
+
+        const oldList = this.list;
+        this.list = new Map();
+
+        onResolve(Array.from(oldList.keys()))
+            .then(list => {
+                for (const [key, value] of oldList) {
+                    for (const item of value) {
+                        item(list[key]);
+                    }
+                }
+            });
+    }
+
     load(id, onResolve) {
         return new Promise(resolve => {
             if (this.list.has(id)) {
@@ -20,14 +35,12 @@ module.exports = class ResolveResolver {
                 this.list.set(id, [resolve]);
             }
 
-            setTimeout(() => {
-                if (!this.list.size) return;
-
-                Array.from(this.list.keys());
-
-                onResolve(Array.from(this.list.keys()))
-                    .then(list => this.resolve(list));
-            }, 20);
-        })
+            setTimeout(
+                () => {
+                    this.tick(onResolve);
+                },
+                10
+            );
+        });
     }
 }

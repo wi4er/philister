@@ -11,16 +11,24 @@ const Element = connection.define(
             allowNull: false,
             unique: 'slugIndex'
         },
-    },
+    }
 );
 
-Element.hasOne(
+Element.belongsTo(
     Element,
     {
         onDelete: 'CASCADE',
         foreignKey: "parent",
     }
 );
+
+Element.children = Element.hasMany(
+    Element,
+    {
+        as: "children",
+        foreignKey: "parent",
+    }
+)
 
 const ElementProperty = connection.define(
     "ElementProperty",
@@ -32,10 +40,15 @@ const ElementProperty = connection.define(
     },
 );
 
+const Element2Group = connection.define(
+    "Element2Group",
+    {}
+)
+
 Element.Group = Element.belongsToMany(
     Group,
     {
-        through: "Element2Group",
+        through: Element2Group,
         as: "group"
     }
 );
@@ -55,7 +68,8 @@ Element.Property = Element.hasMany(ElementProperty, {as: "property"});
 
 module.exports = {
     Element,
-    ElementProperty
+    ElementProperty,
+    Element2Group,
 };
 
 

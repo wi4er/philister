@@ -6,6 +6,7 @@ function resolveElementProperty() {
     const loader = new ResolveResolver();
 
     return id => loader.load(id, async list => {
+        console.log(list)
         const resp = await ElementProperty.findAll({
             where: {ElementId: {[Op.in]: [...list]}}
         })
@@ -17,7 +18,7 @@ function resolveElementProperty() {
                 byElement[item.ElementId] = [];
             }
 
-            byElement[item.ElementId].push(item);
+            byElement[item.ElementId].push(require("./ElementPropertyResolver")(item));
         }
 
         return byElement;

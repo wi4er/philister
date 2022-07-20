@@ -22,15 +22,5 @@ describe("Group entity", () => {
                 slug: "NAME"
             })).rejects.toThrow();
         });
-
-        test("Shouldn't create with uniq slug", async () => {
-            await Group.create({
-                slug: "NAME"
-            });
-
-            await expect(Group.create({
-                slug: "NAME"
-            })).rejects.toThrow();
-        });
     });
 });
