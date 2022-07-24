@@ -1,54 +1,23 @@
 const {graphqlHTTP} = require('express-graphql');
 const {graphql, buildSchema} = require('graphql');
 const {Element} = require("../model/Element");
+const fs = require("fs");
+const path = require("path")
 
-const MyGraphQLSchema = buildSchema(`
-  type Query {
-    element: ElementRoot
-  }
-  
-  type ElementRoot {
-    item: Element
-    list: [Element]
-    count: Int
-  }
-  
-  type Element {
-    id: Int
-    slug: String!
-    createdAt: String!
-    updatedAt: String!
-    property: [ElementProperty]
-    parent: Element
-    children: [Element]
-    group: [Int]
-  }
-  
-  type Group {
-    id: Int
-    slug: String!
-    createdAt: String!
-    updatedAt: String!
-  }
-  
-  type ElementProperty {
-    value: String
-    PropertyId: String
-  }
-`);
-
+const MyGraphQLSchema = buildSchema(
+    fs.readFileSync(path.resolve(__dirname, "./query.graphql")).toString()
+);
 
 const rootValue = {
     element: {
-        list: async () => {
+        list: async (params, context) => {
             const list = (await Element.findAll())
                 .map(item => require("./element/ElementResolver")(item));
 
             return list;
         },
-    }
+    },
 };
-
 
 module.exports = graphqlHTTP({
     schema: MyGraphQLSchema,

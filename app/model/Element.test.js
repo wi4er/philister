@@ -1,7 +1,6 @@
-const {Element, Element2Group} = require("./Element");
+const Element = require("./Element");
 const Property = require("./Property");
 const Group = require("./Group");
-const {execMap} = require("nodemon/lib/config/defaults");
 
 beforeEach(() => require(".").clearDatabase());
 beforeAll(() => require(".").connect());
@@ -42,25 +41,25 @@ describe("Element entity", () => {
         });
     });
 
-    describe("Element with property", () => {
+    describe("Element property with value", () => {
         test("Should create with property", async () => {
             await Property.create({id: "NAME"});
 
-            const inst = (await Element.create({
+            const inst = await Element.create({
                 slug: "123",
                 property: [{
                     value: "Value",
-                    PropertyId: "NAME",
+                    property: "NAME",
                 }]
             }, {
                 include: [
-                    Element.Property,
+                    Element.PropertyValue,
                 ]
-            }));
-            
+            });
+
             expect(inst.property).toHaveLength(1);
             expect(inst.property[0].value).toBe("Value");
-            expect(inst.property[0].PropertyId).toBe("NAME");
+            expect(inst.property[0].property).toBe("NAME");
         });
 
         test("Should create with multy property", async () => {
@@ -70,17 +69,17 @@ describe("Element entity", () => {
                 slug: "123",
                 property: [{
                     value: "VALUE_1",
-                    PropertyId: "NAME",
+                    property: "NAME",
                 }, {
                     value: "VALUE_2",
-                    PropertyId: "NAME",
+                    property: "NAME",
                 }, {
                     value: "VALUE_3",
-                    PropertyId: "NAME",
+                    property: "NAME",
                 }]
             }, {
                 include: [
-                    Element.Property,
+                    Element.PropertyValue,
                 ]
             });
 
@@ -99,16 +98,16 @@ describe("Element entity", () => {
                 slug: "123",
                 property: [{
                     value: "Value",
-                    PropertyId: "FIRST",
+                    property: "FIRST",
                 }, {
                     value: "Value",
-                    PropertyId: "SECOND",
+                    property: "SECOND",
                 }, {
                     value: "Value",
-                    PropertyId: "THIRD",
+                    property: "THIRD",
                 }]
             }, {
-                include: [Element.Property]
+                include: [Element.PropertyValue]
             });
 
             expect(inst.property).toHaveLength(3);
@@ -125,17 +124,17 @@ describe("Element entity", () => {
                 slug: "WITH_PROPS",
                 property: [{
                     value: "FIRST",
-                    PropertyId: "FIRST",
+                    property: "FIRST",
                 }, {
                     value: "SECOND",
-                    PropertyId: "SECOND",
+                    property: "SECOND",
                 }]
             }, {
-                include: [Element.Property]
+                include: [Element.PropertyValue]
             });
 
             const list = await Element.findAll({
-                include: [Element.Property]
+                include: [Element.PropertyValue]
             });
 
             expect(list).toHaveLength(1);
@@ -151,69 +150,95 @@ describe("Element entity", () => {
                     slug: "123",
                     property: [{
                         value: "Value",
-                        PropertyId: "Wrong",
+                        property: "Wrong",
                     }]
                 }, {
                     include: [
-                        Element.Property,
+                        Element.PropertyValue,
                     ]
                 })
             ).rejects.toThrow();
         });
     });
 
-    describe("Element with group", () => {
-        test("Should create with group", async () => {
-            const group = await Group.create({slug: "GROUP"});
+    describe("Element property with element", () => {
+        test("Should create with element", async () => {
+            await Property.create({id: "NAME"});
+
+            const slave = await Element.create({slug: "SLAVE"});
 
             const inst = await Element.create({
-                slug: "ELEMENT",
+                slug: "MASTER",
+                element: [{
+                    property: "NAME",
+                    element: slave.id
+                }],
+            }, {
+                include: [
+                    Element.PropertyElement,
+                ]
             });
 
-            await inst.addGroup(group);
+            console.log(inst.element[0])
 
-            const item = await Element.findOne({
-                where: {id: inst.id},
-                include: Element.Group
-            });
-
-            expect(item.group).toHaveLength(1);
-            expect(item.group[0].id).toBe(group.id);
-        });
-
-        test("Should create with couple of groups", async () => {
-            const group1 = await Group.create({slug: "GROUP_1"});
-            const group2 = await Group.create({slug: "GROUP_2"});
-
-            const inst = await Element.create({
-                slug: "ELEMENT",
-            });
-
-            await inst.addGroup(group1);
-            await inst.addGroup(group2);
-
-            const item = await Element.findOne({
-                where: {id: inst.id},
-                include: Element.Group
-            });
-
-            expect(item.group).toHaveLength(2);
-            expect(item.group[0].id).toBe(group1.id);
-            expect(item.group[1].id).toBe(group2.id);
-        });
-
-        test("Should get by join", async () => {
-            const group = await Group.create({slug: "GROUP"});
-            const inst = await Element.create({
-                slug: "ELEMENT",
-            });
-            await inst.addGroup(group);
-
-            const list = await Element2Group.findAll({
-                // include: Group
-            })
-
-            console.log(list)
+            // expect(inst.property).toHaveLength(1);
+            // expect(inst.property[0].value).toBe("Value");
+            // expect(inst.property[0].property).toBe("NAME");
         });
     });
+
+    // describe("Element with group", () => {
+    //     test("Should create with group", async () => {
+    //         const group = await Group.create({slug: "GROUP"});
+    //
+    //         const inst = await Element.create({
+    //             slug: "ELEMENT",
+    //         });
+    //
+    //         await inst.addGroup(group);
+    //
+    //         const item = await Element.findOne({
+    //             where: {id: inst.id},
+    //             include: Element.Group
+    //         });
+    //
+    //         expect(item.group).toHaveLength(1);
+    //         expect(item.group[0].id).toBe(group.id);
+    //     });
+    //
+    //     test("Should create with couple of groups", async () => {
+    //         const group1 = await Group.create({slug: "GROUP_1"});
+    //         const group2 = await Group.create({slug: "GROUP_2"});
+    //
+    //         const inst = await Element.create({
+    //             slug: "ELEMENT",
+    //         });
+    //
+    //         await inst.addGroup(group1);
+    //         await inst.addGroup(group2);
+    //
+    //         const item = await Element.findOne({
+    //             where: {id: inst.id},
+    //             include: Element.Group
+    //         });
+    //
+    //         expect(item.group).toHaveLength(2);
+    //         expect(item.group[0].id).toBe(group1.id);
+    //         expect(item.group[1].id).toBe(group2.id);
+    //     });
+    //
+    //     test("Should get by join", async () => {
+    //         const group = await Group.create({slug: "GROUP"});
+    //         const inst = await Element.create({
+    //             slug: "ELEMENT",
+    //         });
+    //         await inst.addGroup(group);
+    //
+    //         const list = await Element2Group.findAll({
+    //             // include: Group
+    //         })
+    //
+    //         console.log(list)
+    //     });
+    // });
 });

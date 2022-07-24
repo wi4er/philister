@@ -1,8 +1,9 @@
-module.exports = function ElementPropertyResolver(item) {
+module.exports = function GroupResolver(item) {
     return {
-        value: item.value,
-        PropertyId: item.PropertyId,
+        id: item.id,
+        slug: item.slug,
         createdAt: () => item.createdAt.toISOString(),
         updatedAt: () => item.updatedAt.toISOString(),
     };
 }
+

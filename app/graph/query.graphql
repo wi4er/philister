@@ -1,0 +1,48 @@
+type Query {
+    element: ElementRoot
+}
+
+type ElementRoot {
+    item: Element
+    list(filter: ElementFilter): [Element]
+    count: Int
+}
+
+type Element {
+    id: Int
+    slug: String!
+    createdAt: String!
+    updatedAt: String!
+    property(filter: PropertyFilter): [ElementProperty]
+    parent: Element
+    children: [Element]
+    group: [Group]
+}
+
+type Group {
+    id: Int
+    slug: String!
+    createdAt: String!
+    updatedAt: String!
+}
+
+interface ElementProperty {
+    value: String
+    PropertyId: String
+}
+
+
+type ElementPropertyValue implements ElementProperty {
+    value: String
+    PropertyId: String
+}
+
+input ElementFilter {
+    id: [Int]
+    property: [String]
+}
+
+input PropertyFilter {
+    id: [Int]
+    property: [String]
+}

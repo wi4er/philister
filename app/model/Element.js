@@ -1,7 +1,6 @@
 const {DataTypes} = require("sequelize");
 const {connection} = require(".");
-const Property = require("./Property");
-const Group = require("./Group");
+const ElementPropertyElement = require("./ElementPropertyElement");
 
 const Element = connection.define(
     "Element",
@@ -28,48 +27,45 @@ Element.children = Element.hasMany(
         as: "children",
         foreignKey: "parent",
     }
-)
-
-const ElementProperty = connection.define(
-    "ElementProperty",
-    {
-        value: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-    },
 );
 
-const Element2Group = connection.define(
-    "Element2Group",
-    {}
-)
+// const Element2Group = connection.define(
+//     "Element2Group",
+//     {}
+// )
+//
+// Element.Group = Element.belongsToMany(
+//     Group,
+//     {
+//         through: Element2Group,
+//         as: "group"
+//     }
+// );
 
-Element.Group = Element.belongsToMany(
-    Group,
-    {
-        through: Element2Group,
-        as: "group"
-    }
-);
+Element.PropertyValue = Element.hasMany(require("./ElementPropertyValue"), {as: "property"});
 
-
-ElementProperty.Property = ElementProperty.belongsTo(
-    Property,
+Element.PropertyElement = Element.hasMany(ElementPropertyElement, {as: "element"});
+ElementPropertyElement.Element = ElementPropertyElement.belongsTo(
+    Element,
     {
         foreignKey: {
             allowNull: false,
+            name: "element"
+        },
+        onDelete: 'CASCADE',
+    },
+);
+ElementPropertyElement.Property = ElementPropertyElement.belongsTo(
+    require("./Property"),
+    {
+        foreignKey: {
+            allowNull: false,
+            name: "property"
         },
         onDelete: 'CASCADE',
     }
 );
 
-Element.Property = Element.hasMany(ElementProperty, {as: "property"});
-
-module.exports = {
-    Element,
-    ElementProperty,
-    Element2Group,
-};
+module.exports = Element;
 
 

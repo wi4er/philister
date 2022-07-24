@@ -1,12 +1,12 @@
-const {Element} = require("../../model/Element");
+const Group = require("../../model/Group");
 const {Op} = require("sequelize");
 const ResolveResolver = require("../ResolveResolver");
 
-function resolveElement() {
+function resolveGroup() {
     const loader = new ResolveResolver();
 
-    return id => loader.load(id, {}, async list => {
-        const resp = await Element.findAll({
+    return id => loader.load(id, {},  async list => {
+        const resp = await Group.findAll({
             where: {id: {[Op.in]: [...list]}}
         });
 
@@ -20,4 +20,5 @@ function resolveElement() {
     })
 }
 
-module.exports = resolveElement();
+
+module.exports = resolveGroup();

@@ -4,7 +4,7 @@ module.exports = function ElementResolver(item) {
         slug: item.slug,
         createdAt: () => item.createdAt.toISOString(),
         updatedAt: () => item.updatedAt.toISOString(),
-        property: () => require("./resolveElementProperty")(item.id),
+        property: (filter) => require("./resolveElementProperty")(item.id, filter),
         parent: () => require("./resolveElement")(item.parent),
         children: () => require("./resolveElementChildren")(item.id),
         group: () => require("./resolveElementGroup")(item.id),

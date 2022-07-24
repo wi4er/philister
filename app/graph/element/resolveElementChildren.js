@@ -5,7 +5,7 @@ const ResolveResolver = require("../ResolveResolver");
 function resolveElement() {
     const loader = new ResolveResolver();
 
-    return id => loader.load(id, async list => {
+    return id => loader.load(id, {}, async list => {
         const resp = await Element.findAll({
             where: {parent: {[Op.in]: [...list]}}
         });
